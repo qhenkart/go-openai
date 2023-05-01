@@ -1,7 +1,7 @@
 # Go OpenAI
-[![Go Reference](https://pkg.go.dev/badge/github.com/sashabaranov/go-openai.svg)](https://pkg.go.dev/github.com/sashabaranov/go-openai)
-[![Go Report Card](https://goreportcard.com/badge/github.com/sashabaranov/go-openai)](https://goreportcard.com/report/github.com/sashabaranov/go-openai)
-[![codecov](https://codecov.io/gh/sashabaranov/go-openai/branch/master/graph/badge.svg?token=bCbIfHLIsW)](https://codecov.io/gh/sashabaranov/go-openai)
+[![Go Reference](https://pkg.go.dev/badge/github.com/qhenkart/go-openai.svg)](https://pkg.go.dev/github.com/qhenkart/go-openai)
+[![Go Report Card](https://goreportcard.com/badge/github.com/qhenkart/go-openai)](https://goreportcard.com/report/github.com/qhenkart/go-openai)
+[![codecov](https://codecov.io/gh/qhenkart/go-openai/branch/master/graph/badge.svg?token=bCbIfHLIsW)](https://codecov.io/gh/qhenkart/go-openai)
 
 This library provides Go clients for [OpenAI API](https://platform.openai.com/). We support:
 
@@ -12,7 +12,7 @@ This library provides Go clients for [OpenAI API](https://platform.openai.com/).
 
 Installation:
 ```
-go get github.com/sashabaranov/go-openai
+go get github.com/qhenkart/go-openai
 ```
 
 
@@ -24,7 +24,7 @@ package main
 import (
 	"context"
 	"fmt"
-	openai "github.com/sashabaranov/go-openai"
+	openai "github.com/qhenkart/go-openai"
 )
 
 func main() {
@@ -67,7 +67,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	openai "github.com/sashabaranov/go-openai"
+	openai "github.com/qhenkart/go-openai"
 )
 
 func main() {
@@ -120,7 +120,7 @@ package main
 import (
 	"context"
 	"fmt"
-	openai "github.com/sashabaranov/go-openai"
+	openai "github.com/qhenkart/go-openai"
 )
 
 func main() {
@@ -153,7 +153,7 @@ import (
 	"context"
 	"fmt"
 	"io"
-	openai "github.com/sashabaranov/go-openai"
+	openai "github.com/qhenkart/go-openai"
 )
 
 func main() {
@@ -202,7 +202,7 @@ import (
 	"context"
 	"fmt"
 
-	openai "github.com/sashabaranov/go-openai"
+	openai "github.com/qhenkart/go-openai"
 )
 
 func main() {
@@ -234,7 +234,7 @@ import (
 	"fmt"
 	"os"
 
-	openai "github.com/sashabaranov/go-openai"
+	openai "github.com/qhenkart/go-openai"
 )
 
 func main() {
@@ -275,7 +275,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	openai "github.com/sashabaranov/go-openai"
+	openai "github.com/qhenkart/go-openai"
 	"image/png"
 	"os"
 )
@@ -363,7 +363,7 @@ config.HTTPClient = &http.Client{
 c := openai.NewClientWithConfig(config)
 ```
 
-See also: https://pkg.go.dev/github.com/sashabaranov/go-openai#ClientConfig
+See also: https://pkg.go.dev/github.com/qhenkart/go-openai#ClientConfig
 </details>
 
 <details>
@@ -379,7 +379,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/sashabaranov/go-openai"
+	"github.com/qhenkart/go-openai"
 )
 
 func main() {
@@ -433,7 +433,7 @@ import (
 	"context"
 	"fmt"
 
-	openai "github.com/sashabaranov/go-openai"
+	openai "github.com/qhenkart/go-openai"
 )
 
 func main() {
