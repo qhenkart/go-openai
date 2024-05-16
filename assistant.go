@@ -14,26 +14,56 @@ const (
 )
 
 type Assistant struct {
-	ID           string          `json:"id"`
-	Object       string          `json:"object"`
-	CreatedAt    int64           `json:"created_at"`
-	Name         *string         `json:"name,omitempty"`
-	Description  *string         `json:"description,omitempty"`
-	Model        string          `json:"model"`
-	Instructions *string         `json:"instructions,omitempty"`
-	Tools        []AssistantTool `json:"tools"`
-	FileIDs      []string        `json:"file_ids,omitempty"`
-	Metadata     map[string]any  `json:"metadata,omitempty"`
+	ID            string          `json:"id"`
+	Object        string          `json:"object"`
+	CreatedAt     int64           `json:"created_at"`
+	Name          *string         `json:"name,omitempty"`
+	Description   *string         `json:"description,omitempty"`
+	Model         string          `json:"model"`
+	Instructions  *string         `json:"instructions,omitempty"`
+	Tools         []AssistantTool `json:"tools"`
+	ToolResources *ToolResources  `json:"tool_resources"`
+	TopP          *float32        `json:"top_p"`
+	Temperature   *float32        `json:"temperature"`
+	// TODO: can be a string or an object, will require custom marshalling to support fully
+	ResponseFormat interface{}    `json:"response_format"`
+	FileIDs        []string       `json:"file_ids,omitempty"`
+	Metadata       map[string]any `json:"metadata,omitempty"`
 
-	httpHeader
+	httpHeader `json:"httpHeader"`
+}
+
+// ToolResources A set of resources that are used by the assistant's tools.
+// The resources are specific to the type of tool. For example, the code_interpreter tool
+// requires a list of file IDs, while the file_search tool requires a list of vector store IDs.
+type ToolResources struct {
+	CodeInterpreter FileIDs     `json:"code_interpreter"`
+	FileSearch      VectorStore `json:"file_search"`
+}
+
+// https://platform.openai.com/docs/api-reference/vector-stores/object
+// TODO: Vector stores are not yet implemented by this SDK
+type VectorStore struct {
+	VectorStoreIDs []string  `json:"vector_store_ids"`
+	VectorStores   []FileIDs `json:"vector_stores"`
+}
+
+// FileIDs provides a list of file Ids and optiona metadata
+type FileIDs struct {
+	FileIDs  []string          `json:"file_ids"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 }
 
 type AssistantToolType string
 
 const (
+	// AttachmentToolTypeCodeInterpreter provides the code_interpreter option
 	AssistantToolTypeCodeInterpreter AssistantToolType = "code_interpreter"
-	AssistantToolTypeRetrieval       AssistantToolType = "retrieval"
-	AssistantToolTypeFunction        AssistantToolType = "function"
+	// AttachmentToolTypeFileSearch provides the file_search option
+	AssistantToolTypeFileSearch AssistantToolType = "file_search"
+	AssistantToolTypeFunction   AssistantToolType = "function"
+	// Deprecated: Switch to V2 and use AassistantToolTypeFileSearch instead.
+	AssistantToolTypeRetrieval AssistantToolType = "retrieval"
 )
 
 type AssistantTool struct {
@@ -47,13 +77,21 @@ type AssistantTool struct {
 // If Tools is empty slice it will effectively delete all of the Assistant's tools.
 // If Tools is populated, it will replace all of the existing Assistant's tools with the provided tools.
 type AssistantRequest struct {
-	Model        string          `json:"model"`
-	Name         *string         `json:"name,omitempty"`
-	Description  *string         `json:"description,omitempty"`
-	Instructions *string         `json:"instructions,omitempty"`
-	Tools        []AssistantTool `json:"-"`
-	FileIDs      []string        `json:"file_ids,omitempty"`
-	Metadata     map[string]any  `json:"metadata,omitempty"`
+	Model        string   `json:"model"`
+	Name         *string  `json:"name,omitempty"`
+	Description  *string  `json:"description,omitempty"`
+	Instructions *string  `json:"instructions,omitempty"`
+	Temperature  *float32 `json:"temperature,omitempty"`
+	TopP         *float32 `json:"top_p,omitempty"`
+
+	ToolResources *ToolResources `json:"tool_resources,omitempty"`
+
+	// TODO: can be a string or an object, will require custom marshalling to support fully
+	ResponseFormat interface{} `json:"response_format,omitempty"`
+
+	Tools    []AssistantTool `json:"-"`
+	FileIDs  []string        `json:"file_ids,omitempty"`
+	Metadata map[string]any  `json:"metadata,omitempty"`
 }
 
 // MarshalJSON provides a custom marshaller for the assistant request to handle the API use cases

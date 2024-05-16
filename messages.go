@@ -9,7 +9,14 @@ import (
 
 const (
 	messagesSuffix = "messages"
+	// AttachmentToolTypeCodeInterpreter provides the code_interpreter option
+	AttachmentToolTypeCodeInterpreter AttachmentToolType = "code_interpreter"
+	// AttachmentToolTypeFileSearch provides the file_search option
+	AttachmentToolTypeFileSearch AttachmentToolType = "file_search"
 )
+
+// AttachmentToolType provides the attachment options
+type AttachmentToolType string
 
 type Message struct {
 	ID          string           `json:"id"`
@@ -18,12 +25,15 @@ type Message struct {
 	ThreadID    string           `json:"thread_id"`
 	Role        string           `json:"role"`
 	Content     []MessageContent `json:"content"`
-	FileIds     []string         `json:"file_ids"` //nolint:revive //backwards-compatibility
+	Attachments []Attachment     `json:"attachments,omitempty"` //nolint:revive // backwards-compatibility
 	AssistantID *string          `json:"assistant_id,omitempty"`
 	RunID       *string          `json:"run_id,omitempty"`
 	Metadata    map[string]any   `json:"metadata"`
 
 	httpHeader
+
+	// Deprecated: Switch to V2 and use Attachments instead.
+	FileIds []string `json:"file_ids"` //nolint:revive //backwards-compatibility
 }
 
 type MessagesList struct {
@@ -52,10 +62,23 @@ type ImageFile struct {
 }
 
 type MessageRequest struct {
-	Role     string         `json:"role"`
-	Content  string         `json:"content"`
-	FileIds  []string       `json:"file_ids,omitempty"` //nolint:revive // backwards-compatibility
-	Metadata map[string]any `json:"metadata,omitempty"`
+	Role        string         `json:"role"`
+	Content     string         `json:"content"`
+	Attachments []Attachment   `json:"attachments,omitempty"` //nolint:revive // backwards-compatibility
+	Metadata    map[string]any `json:"metadata,omitempty"`
+	// Deprecated: Switch to V2 and use Attachments instead.
+	FileIds []string `json:"file_ids,omitempty"` //nolint:revive // backwards-compatibility
+}
+
+// Attachment represents the V2 file attachment system of the Assistant. This replaces the previous FileID list
+type Attachment struct {
+	FileID string           `json:"file_id,omitempty"`
+	Tools  []AttachmentTool `json:"tools,omitempty"`
+}
+
+// AttachmentTool provides the specific tool allowed, must be either code_interpreter or file_search
+type AttachmentTool struct {
+	Type AttachmentToolType `json:"type"`
 }
 
 type MessageFile struct {

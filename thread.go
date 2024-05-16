@@ -10,20 +10,25 @@ const (
 )
 
 type Thread struct {
-	ID        string         `json:"id"`
-	Object    string         `json:"object"`
-	CreatedAt int64          `json:"created_at"`
-	Metadata  map[string]any `json:"metadata"`
+	ID        string `json:"id"`
+	Object    string `json:"object"`
+	CreatedAt int64  `json:"created_at"`
+
+	ToolResources *ToolResources `json:"tool_resources,omitempty"`
+	Metadata      map[string]any `json:"metadata"`
 
 	httpHeader
 }
 
 type ThreadRequest struct {
-	Messages []ThreadMessage `json:"messages,omitempty"`
-	Metadata map[string]any  `json:"metadata,omitempty"`
+	Messages      []ThreadMessage `json:"messages,omitempty"`
+	ToolResources *ToolResources  `json:"tool_resources,omitempty"`
+	Metadata      map[string]any  `json:"metadata,omitempty"`
 }
 
 type ModifyThreadRequest struct {
+	ToolResources *ToolResources `json:"tool_resources,omitempty"`
+
 	Metadata map[string]any `json:"metadata"`
 }
 

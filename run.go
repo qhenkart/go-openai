@@ -24,11 +24,19 @@ type Run struct {
 	Model          string             `json:"model"`
 	Instructions   string             `json:"instructions,omitempty"`
 	Tools          []Tool             `json:"tools"`
-	FileIDS        []string           `json:"file_ids"` //nolint:revive // backwards-compatibility
 	Metadata       map[string]any     `json:"metadata"`
 	Usage          Usage              `json:"usage,omitempty"`
 
+	IncompleteDetails *struct {
+		Reason string `json:"reason"`
+	} `json:"incomplete_details"`
+
+	// TODO: can be a string or an object, will require custom marshalling to support fully
+	// https://platform.openai.com/docs/api-reference/runs/object#runs/object-tool_choice
+	ToolChoice interface{} `json:"tool_choice"`
+
 	Temperature *float32 `json:"temperature,omitempty"`
+	TopP        *float32 `json:"top_p,omitempty"`
 	// The maximum number of prompt tokens that may be used over the course of the run.
 	// If the run exceeds the number of prompt tokens specified, the run will end with status 'complete'.
 	MaxPromptTokens int `json:"max_prompt_tokens,omitempty"`
@@ -37,6 +45,12 @@ type Run struct {
 	MaxCompletionTokens int `json:"max_completion_tokens,omitempty"`
 	// ThreadTruncationStrategy defines the truncation strategy to use for the thread.
 	TruncationStrategy *ThreadTruncationStrategy `json:"truncation_strategy,omitempty"`
+
+	// TODO: can be a string or an object, will require custom marshalling to support fully
+	ResponseFormat interface{} `json:"response_format"`
+
+	// Deprecated: Switch to V2 and use Tool FileSearch instead.
+	FileIDS []string `json:"file_ids"` //nolint:revive // backwards-compatibility
 
 	httpHeader
 }
@@ -48,10 +62,11 @@ const (
 	RunStatusInProgress     RunStatus = "in_progress"
 	RunStatusRequiresAction RunStatus = "requires_action"
 	RunStatusCancelling     RunStatus = "cancelling"
+	RunStatusCancelled      RunStatus = "cancelled"
 	RunStatusFailed         RunStatus = "failed"
 	RunStatusCompleted      RunStatus = "completed"
+	RunStatusIncomplete     RunStatus = "incomplete"
 	RunStatusExpired        RunStatus = "expired"
-	RunStatusCancelled      RunStatus = "cancelled"
 )
 
 type RunRequiredAction struct {
@@ -86,12 +101,21 @@ type RunRequest struct {
 	Model                  string         `json:"model,omitempty"`
 	Instructions           string         `json:"instructions,omitempty"`
 	AdditionalInstructions string         `json:"additional_instructions,omitempty"`
+	AdditionalMessages     string         `json:"additional_messages,omitempty"`
 	Tools                  []Tool         `json:"tools,omitempty"`
 	Metadata               map[string]any `json:"metadata,omitempty"`
 
 	// Sampling temperature between 0 and 2. Higher values like 0.8 are  more random.
 	// lower values are more focused and deterministic.
 	Temperature *float32 `json:"temperature,omitempty"`
+	TopP        *float32 `json:"top_p,omitempty"`
+
+	// TODO: can be a string or an object, will require custom marshalling to support fully
+	// https://platform.openai.com/docs/api-reference/runs/object#runs/object-tool_choice
+	ToolChoice interface{} `json:"tool_choice"`
+
+	// TODO: can be a string or an object, will require custom marshalling to support fully
+	ResponseFormat interface{} `json:"response_format"`
 
 	// The maximum number of prompt tokens that may be used over the course of the run.
 	// If the run exceeds the number of prompt tokens specified, the run will end with status 'complete'.
@@ -189,7 +213,13 @@ const (
 type StepDetails struct {
 	Type            RunStepType                 `json:"type"`
 	MessageCreation *StepDetailsMessageCreation `json:"message_creation,omitempty"`
-	ToolCalls       []ToolCall                  `json:"tool_calls,omitempty"`
+	ToolCalls       *ToolCalls                  `json:"tool_calls,omitempty"`
+}
+
+type ToolCalls struct {
+	// always equals tool_calls
+	Type      string     `json:"type"`
+	ToolCalls []ToolCall `json:"tool_calls"`
 }
 
 type StepDetailsMessageCreation struct {

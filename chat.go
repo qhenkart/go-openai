@@ -159,16 +159,33 @@ func (m *ChatCompletionMessage) UnmarshalJSON(bs []byte) error {
 
 type ToolCall struct {
 	// Index is not nil only in chat completion chunk object
-	Index    *int         `json:"index,omitempty"`
-	ID       string       `json:"id"`
-	Type     ToolType     `json:"type"`
-	Function FunctionCall `json:"function"`
+	Index           *int                 `json:"index,omitempty"`
+	ID              string               `json:"id"`
+	Type            ToolType             `json:"type"`
+	Function        *FunctionCall        `json:"function"`
+	CodeInterpreter *CodeInterpreterCall `json:"code_interpreter"`
+}
+
+type CodeInterpreterCall struct {
+	Input   string                  `json:"input"`
+	Outputs []CodeInterpreterOutput `json:"outputs"`
+}
+
+type CodeInterpreterOutput struct {
+	// if type equals logs, then the log field is populated, if it equals image, then the image struct will be populated
+	Type  string `json:"type"`
+	Logs  string `json:"logs"`
+	Image struct {
+		FileID string `json:"file_id"`
+	} `json:"image"`
 }
 
 type FunctionCall struct {
 	Name string `json:"name,omitempty"`
 	// call function with arguments in JSON format
 	Arguments string `json:"arguments,omitempty"`
+	// The output of the function. This will be null if the outputs have not been submitted yet
+	Output *string `json:"output,omitempty"`
 }
 
 type ChatCompletionResponseFormatType string
@@ -231,7 +248,9 @@ type StreamOptions struct {
 type ToolType string
 
 const (
-	ToolTypeFunction ToolType = "function"
+	ToolTypeFunction        ToolType = "function"
+	ToolTypeFileSearch      ToolType = "file_search"
+	ToolTypeCodeInterpreter ToolType = "code_interpreter"
 )
 
 type Tool struct {
